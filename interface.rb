@@ -41,16 +41,16 @@ class Interface
     puts ''
     puts '---------------------'
     puts "#{dealer.name.upcase}:#{print_info(dealer, dealer_status)}"
-    print_cards(dealer.cards, dealer_status)
+    print_cards(dealer.hand.cards, dealer_status)
     puts '/\/\/\/\/\/\/\/\/\/\\'
-    print_cards(player.cards, 'open')
+    print_cards(player.hand.cards, 'open')
     puts "#{player.name.upcase}:#{print_info(player, 'open')}"
     puts '---------------------'
     puts ''
   end
 
   def print_info(player, status)
-    score = player.count_points
+    score = player.hand.points
     score = '*' if status == 'close'
     "   money #{player.dollars}$   score {#{score}}"
   end
@@ -74,8 +74,8 @@ class Interface
       card_value = -1
       card_suit = -1
     else
-      card_value = card % 13
-      card_suit = card / 13
+      card_value = card.value
+      card_suit = card.suit
     end
     picture = ['---------  ']
     value_char = (card_value + 2).to_s if card_value < 9

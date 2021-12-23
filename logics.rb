@@ -3,7 +3,7 @@ class Logics
   attr_reader :player, :dealer
 
   def initialize
-    @cards = (0...52).to_a.shuffle
+    @deck = Deck.new
     @interface = Interface.new
     @player = Player.new(@interface.player_name)
     @dealer = Player.new
@@ -12,8 +12,8 @@ class Logics
   def process
     game_status = 'active'
     while game_status != 'exit'
-      @player.cards = [@cards.pop, @cards.pop]
-      @dealer.cards = [@cards.pop, @cards.pop]
+      @player.hand = Hand.new(@deck.give_cards(2))
+      @dealer.hand = Hand.new(@deck.give_cards(2))
       @player.subtract_dollars
       @dealer.subtract_dollars
       skip_limit = false
@@ -24,19 +24,19 @@ class Logics
           dealer_move if skip_limit == false
           skip_limit = true
         when 'add card', '2'
-          @player.add_card(@cards.pop)
+          @player.hand.add_card(@deck.give_cards(1))
           dealer_move if skip_limit == false
         when 'show cards', '3'
           game_status = game_over
         end
-        game_status = game_over if @player.cards.length == 3
+        game_status = game_over if @player.hand.cards_num == 3
       end
     end
   end
 
   def game_over
-    player_points = @player.count_points
-    dealer_points = @dealer.count_points
+    player_points = @player.hand.points
+    dealer_points = @dealer.hand.points
     if player_points <= 21 && (player_points > dealer_points || dealer_points > 21)
       @player.add_dollars
       winner = @player.name
@@ -55,8 +55,8 @@ class Logics
   end
 
   def dealer_move
-    if @dealer.cards.length == 2 && @dealer.count_points < 17
-      @dealer.add_card(@cards.pop)
+    if @dealer.hand.cards_num == 2 && @dealer.hand.points < 17
+      @dealer.hand.add_card(@deck.give_cards(1))
       @interface.dealer_move('add card')
     else
       @interface.dealer_move('skip')
