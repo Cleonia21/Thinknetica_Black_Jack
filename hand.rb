@@ -1,27 +1,21 @@
 class Hand
 
-  attr_reader :cards, :points
+  attr_reader :cards
 
   def initialize(cards)
-    @cards = []
-    @cards << cards
-    @cards.flatten!
-    @points = count_points
+    @cards = [cards].flatten
   end
 
   def add_card(card)
     @cards << card
     @cards.flatten!
-    count_points
   end
 
   def cards_num
     @cards.length
   end
 
-  private
-
-  def count_points
+  def points
     @points = 0
     @cards.each do |card|
       @points += card.value + 2 if card.value < 9
